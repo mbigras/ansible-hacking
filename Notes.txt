@@ -1,0 +1,160 @@
+Ansible Hacking
+
+Overview
+
+Using a playbook
+Printing stuff to the screen
+Extract message into a variable
+Working with a list
+Roles
+Ideas
+
+Ideas
+
+Plug ansible into vagrant
+Plug ansible into docker
+
+Using a playbook
+
+ansible-playbook -i localhost, -c local playbook.yml
+
+Printing stuff to the screen
+
+https://unix.stackexchange.com/questions/425276/using-dev-stdin-and-a-heredoc-to-pass-a-file-from-the-command-line
+
+ansible all -i localhost, -c local -a 'echo hello world' | tee /dev/tty | pbcopy
+localhost | SUCCESS | rc=0 >>
+hello world
+
+ansible all -i localhost, -c local -m debug -a 'msg="hello world"' | tee /dev/tty | pbcopy
+localhost | SUCCESS => {
+    "changed": false, 
+    "msg": "hello world"
+}
+
+ansible-playbook -i localhost, -c local /dev/stdin <<EOF | tee /dev/tty | pbcopy
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print something
+      debug:
+        msg: hello world
+EOF
+
+PLAY [all] *********************************************************************
+
+TASK [Print something] *********************************************************
+ok: [localhost] => {
+    "msg": "hello world"
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0   
+
+Extract message into a variable
+
+ansible-playbook -i localhost, -c local /dev/stdin <<EOF | tee /dev/tty | pbcopy
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    some_var: hello world
+  tasks:
+    - name: Print something
+      debug:
+        msg: the dog says "{{some_var}}"
+EOF
+
+PLAY [all] *********************************************************************
+
+TASK [Print something] *********************************************************
+ok: [localhost] => {
+    "msg": "the dog says \"hello world\""
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=1    changed=0    unreachable=0    failed=0   
+
+Working with a list
+
+ansible-playbook -i localhost, -c local /dev/stdin <<EOF | tee /dev/tty | pbcopy
+---
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print some things
+      debug:
+        msg: the tao of {{item}}
+      with_items:
+      - foo
+      - bar
+      - baz
+EOF
+
+ansible-playbook -i localhost, -c local /dev/stdin <<EOF | tee /dev/tty | pbcopy
+---
+- hosts: all
+  gather_facts: false
+  vars:
+    somelist:
+      - foo
+      - bar
+      - baz
+  tasks:
+    - name: Print some things
+      debug:
+        msg: the tao of {{item}}
+      with_items: "{{somelist}}"
+EOF
+
+Roles
+
+http://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html
+
+Example project structure:
+
+site.yml
+webservers.yml
+fooservers.yml
+roles/
+   common/
+     tasks/
+     handlers/
+     files/
+     templates/
+     vars/
+     defaults/
+     meta/
+   webservers/
+     tasks/
+     defaults/
+     meta/
+
+tasks - contains the main list of tasks to be executed by the role.
+handlers - contains handlers, which may be used by this role or even anywhere outside this role.
+defaults - default variables for the role (see Variables for more information).
+vars - other variables for the role (see Variables for more information).
+files - contains files which can be deployed via this role.
+templates - contains templates which can be deployed via this role.
+meta - defines some meta data for this role. See below for more details.
+
+http://docs.ansible.com/ansible/latest/user_guide/playbooks_reuse_roles.html#using-roles
+
+Using Roles
+The classic (original) way to use roles is via the roles: option for a given play:
+
+---
+- hosts: webservers
+  roles:
+     - common
+     - webservers
+
+This designates the following behaviors, for each role ‘x’:
+
+If roles/x/tasks/main.yml exists, tasks listed therein will be added to the play.
+If roles/x/handlers/main.yml exists, handlers listed therein will be added to the play.
+If roles/x/vars/main.yml exists, variables listed therein will be added to the play.
+If roles/x/defaults/main.yml exists, variables listed therein will be added to the play.
+If roles/x/meta/main.yml exists, any role dependencies listed therein will be added to the list of roles (1.3 and later).
+Any copy, script, template or include tasks (in the role) can reference files in roles/x/{files,templates,tasks}/ (dir depends on task) without having to path them relatively or absolutely.

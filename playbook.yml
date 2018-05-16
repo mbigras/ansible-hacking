@@ -1,0 +1,12 @@
+- hosts: all
+  gather_facts: false
+  tasks:
+    - name: Print something
+      debug:
+        msg: hello world
+
+    - name: Create a file
+      copy:
+        content: ''
+        dest: somefile
+        force: no
