@@ -2,12 +2,22 @@ Ansible Hacking
 
 Overview
 
+Find the ubuntu image ids for Digital Ocean
+List droplets
 Using a playbook
 Printing stuff to the screen
 Extract message into a variable
 Working with a list
 Roles
 Ideas
+
+Find the ubuntu image ids for Digital Ocean
+
+curl -s -H "Content-Type: application/json" -H "Authorization: Bearer $(lpass show --notes do_token)" "https://api.digitalocean.com/v2/images?type=distribution" | jq '.images[] | select(.distribution == "Ubuntu")' | tee /dev/tty | pbcopy
+
+List droplets
+
+curl -s -X GET -H 'Content-Type: application/json' -H "Authorization: Bearer $(lpass show --notes do_token)" https://api.digitalocean.com/v2/droplets
 
 Ideas
 

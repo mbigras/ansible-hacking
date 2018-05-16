@@ -20,7 +20,7 @@ resource "digitalocean_ssh_key" "default" {
 
 resource "digitalocean_droplet" "web" {
   name = "somehost"
-  image = "centos-7-x64"
+  image = "ubuntu-18-04-x64"
   region = "sfo2"
   size = "512mb"
   ssh_keys = [
@@ -37,6 +37,8 @@ resource "digitalocean_droplet" "web" {
       "echo Waiting for cloud-init...",
       "while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 1; done",
       "echo Cloud-init is finished!",
+      "apt-get update -y",
+      "apt-get install -y python",
     ]
   }
 }
