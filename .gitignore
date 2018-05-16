@@ -1,2 +1,8 @@
-.vagrant
-*.retry
+.terraform/
+.vagrant/
+hosts
+id_rsa
+id_rsa.pub
+playbook.retry
+terraform.tfstate
+terraform.tfstate.backup
