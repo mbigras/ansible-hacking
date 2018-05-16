@@ -4,7 +4,7 @@
 
 ```
 vagrant up
-vagrant provision && vagrant provision
-vagrant ssh -c 'pwd; ls'
+vagrant provision && !!
+vagrant ssh -c 'ls /home/vagrant'
 vagrant destroy -f
 ```
