@@ -37,3 +37,15 @@ ip=$(terraform state show digitalocean_droplet.web | awk '/ipv4_address/ { print
 ssh -i id_rsa root@$ip ls
 terraform destroy -force
 ```
+
+Extract DigitalOcean token using Docker if lpass isn't installed
+
+https://github.com/mbigras/docker-lastpass-cli
+
+```
+read -p 'Email: ' email
+docker run --rm -itd --name tmp mbigras/lastpass-cli
+docker exec -it tmp lpass login $email
+export TF_VAR_do_token="$(docker exec tmp lpass show --notes do_token)"
+docker rm -f tmp
+```
