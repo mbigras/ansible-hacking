@@ -1,5 +1,7 @@
 # Ansible Hacking
 
+> Various setups to practice using Ansible
+
 ## Vagrant usage example
 
 ```
