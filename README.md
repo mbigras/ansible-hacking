@@ -2,6 +2,12 @@
 
 > Various setups to practice using Ansible
 
+## Generate ssh key
+
+```
+ssh-keygen -q -b 2048 -t rsa -f id_rsa -N '' -C ''
+```
+
 ## Vagrant usage example
 
 ```
