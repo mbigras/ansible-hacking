@@ -8,5 +8,5 @@
     - name: Create a file
       copy:
         content: ''
-        dest: somefile
+        dest: ~/somefile
         force: no
